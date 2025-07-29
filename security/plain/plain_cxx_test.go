@@ -16,8 +16,8 @@ import (
 	"time"
 
 	czmq4 "github.com/go-zeromq/goczmq/v4"
-	"github.com/go-zeromq/zmq4"
-	"github.com/go-zeromq/zmq4/security/plain"
+	"github.com/luxfi/zmq4"
+	"github.com/luxfi/zmq4/security/plain"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -49,7 +49,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestHandshakeReqCRep(t *testing.T) {
-	t.Skipf("REQ-CREP")
+	t.Skipf("%s", "REQ-CREP")
 
 	sec := plain.Security("user", "secret")
 	if got, want := sec.Type(), zmq4.PlainSecurity; got != want {
@@ -118,7 +118,7 @@ func TestHandshakeReqCRep(t *testing.T) {
 }
 
 func TestHandshakeCReqRep(t *testing.T) {
-	t.Skipf("CREQ-REP")
+	t.Skipf("%s", "CREQ-REP")
 
 	sec := plain.Security("user", "secret")
 	if got, want := sec.Type(), zmq4.PlainSecurity; got != want {
@@ -187,7 +187,7 @@ func TestHandshakeCReqRep(t *testing.T) {
 }
 
 func TestHandshakeCReqCRep(t *testing.T) {
-	t.Skipf("CREQ-CREP")
+	t.Skipf("%s", "CREQ-CREP")
 
 	sec := plain.Security("user", "secret")
 	if got, want := sec.Type(), zmq4.PlainSecurity; got != want {

@@ -17,7 +17,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-zeromq/zmq4"
+	"github.com/luxfi/zmq4"
 )
 
 const (

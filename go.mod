@@ -1,6 +1,6 @@
-module github.com/go-zeromq/zmq4
+module github.com/luxfi/zmq4
 
-go 1.21
+go 1.24.5
 
 require (
 	github.com/go-zeromq/goczmq/v4 v4.2.2
