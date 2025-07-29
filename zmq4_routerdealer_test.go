@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-zeromq/zmq4"
+	"github.com/luxfi/zmq4"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -99,7 +99,7 @@ func TestRouterDealer(t *testing.T) {
 			cleanUp(ep)
 
 			if tc.skip {
-				t.Skipf(tc.name)
+				t.Skipf("%s", tc.name)
 			}
 
 			ctx, timeout := context.WithTimeout(context.Background(), 10*time.Second)
