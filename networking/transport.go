@@ -226,7 +226,7 @@ func (t *Transport) Broadcast(msg *Message) error {
 	}
 	
 	t.msgSent.Add(1)
-	return t.pub.Send(zmq4.NewMsgBytes(data))
+	return t.pub.Send(zmq4.NewMsg(data))
 }
 
 // Send sends a direct message to a specific peer
@@ -249,7 +249,7 @@ func (t *Transport) Send(peerID string, msg *Message) error {
 	}
 	
 	t.msgSent.Add(1)
-	return dealer.Send(zmq4.NewMsgBytes(data))
+	return dealer.Send(zmq4.NewMsg(data))
 }
 
 // SendWithRetry sends a message with retry logic
