@@ -1,21 +1,36 @@
-# zmq4
+# zmq4 - LuxFi Fork
 
-[![GitHub release](https://img.shields.io/github/release/go-zeromq/zmq4.svg)](https://github.com/go-zeromq/zmq4/releases)
-[![go.dev reference](https://pkg.go.dev/badge/github.com/go-zeromq/zmq4)](https://pkg.go.dev/github.com/go-zeromq/zmq4)
-[![CI](https://github.com/go-zeromq/zmq4/workflows/CI/badge.svg)](https://github.com/go-zeromq/zmq4/actions)
-[![codecov](https://codecov.io/gh/go-zeromq/zmq4/branch/main/graph/badge.svg)](https://codecov.io/gh/go-zeromq/zmq4)
-[![GoDoc](https://godoc.org/github.com/go-zeromq/zmq4?status.svg)](https://godoc.org/github.com/go-zeromq/zmq4)
-[![License](https://img.shields.io/badge/License-BSD--3-blue.svg)](https://github.com/go-zeromq/license)
-[![DOI](https://zenodo.org/badge/129430151.svg)](https://zenodo.org/badge/latestdoi/129430151)
+[![GitHub release](https://img.shields.io/github/release/luxfi/zmq.svg)](https://github.com/luxfi/zmq/releases)
+[![go.dev reference](https://pkg.go.dev/badge/github.com/luxfi/zmq/v4)](https://pkg.go.dev/github.com/luxfi/zmq/v4)
+[![CI](https://github.com/luxfi/zmq/workflows/CI/badge.svg)](https://github.com/luxfi/zmq/actions)
+[![GoDoc](https://godoc.org/github.com/luxfi/zmq/v4?status.svg)](https://godoc.org/github.com/luxfi/zmq/v4)
+[![License](https://img.shields.io/badge/License-BSD--3-blue.svg)](https://github.com/luxfi/zmq/blob/main/LICENSE)
 
 `zmq4` is a pure-Go implementation of ØMQ (ZeroMQ), version 4.
 
-See [zeromq.org](http://zeromq.org) for more informations.
+This is the LuxFi fork of the original [go-zeromq/zmq4](https://github.com/go-zeromq/zmq4) project, maintained for use in the Lux Network ecosystem.
+
+See [zeromq.org](http://zeromq.org) for more information about ZeroMQ.
+
+## Installation
+
+```bash
+go get github.com/luxfi/zmq/v4
+```
+
+## Usage
+
+```go
+import "github.com/luxfi/zmq/v4"
+```
+
+## Version
+
+This fork maintains compatibility with ZeroMQ v4.2.0 and follows Go module versioning with the `/v4` suffix.
 
 ## Development
 
-`zmq4` needs a caring maintainer.
-I (`sbinet`) have not much time to dedicate anymore to this project (as `$WORK` doesn't need it anymore).
+This fork is maintained by the LuxFi team for use in the Lux Network consensus and networking layers.
 
 ## License
 
@@ -23,7 +38,20 @@ I (`sbinet`) have not much time to dedicate anymore to this project (as `$WORK` 
 
 ## Documentation
 
-Documentation for `zmq4` is served by [GoDoc](https://godoc.org/github.com/go-zeromq/zmq4).
+Documentation for `zmq4` is served by [GoDoc](https://godoc.org/github.com/luxfi/zmq/v4).
+
+## Dependencies
+
+This package depends on:
+- [github.com/luxfi/czmq/v4](https://github.com/luxfi/czmq) v4.2.0
+
+## Contributing
+
+Contributions are welcome! Please submit issues and pull requests to the [LuxFi ZMQ repository](https://github.com/luxfi/zmq).
 
 
-# CI Status
+## Original Project
+
+This is a fork of [go-zeromq/zmq4](https://github.com/go-zeromq/zmq4). The original project is licensed under BSD-3.
+
+## CI Status
