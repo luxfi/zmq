@@ -16,7 +16,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/luxfi/zmq4"
+	"github.com/luxfi/zmq/v4"
 )
 
 func main() {

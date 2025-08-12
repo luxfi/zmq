@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/luxfi/zmq4"
+	"github.com/luxfi/zmq/v4"
 )
 
 // security implements the NULL security mechanism.

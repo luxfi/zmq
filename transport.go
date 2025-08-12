@@ -9,8 +9,8 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/luxfi/zmq4/internal/inproc"
-	"github.com/luxfi/zmq4/transport"
+	"github.com/luxfi/zmq/v4/internal/inproc"
+	"github.com/luxfi/zmq/v4/transport"
 )
 
 // UnknownTransportError records an error when trying to
