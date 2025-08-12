@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/luxfi/zmq4"
+	"github.com/luxfi/zmq/v4"
 )
 
 func TestIssue99(t *testing.T) {

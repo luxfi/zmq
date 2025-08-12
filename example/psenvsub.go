@@ -12,7 +12,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/luxfi/zmq4"
+	"github.com/luxfi/zmq/v4"
 )
 
 func main() {

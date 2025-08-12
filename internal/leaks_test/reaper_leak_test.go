@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luxfi/zmq4"
+	"github.com/luxfi/zmq/v4"
 	"go.uber.org/goleak"
 )
 

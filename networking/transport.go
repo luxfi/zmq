@@ -13,7 +13,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/luxfi/zmq4"
+	"github.com/luxfi/zmq/v4"
 )
 
 // Transport provides high-performance message passing using ZMQ4

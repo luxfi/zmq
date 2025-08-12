@@ -9,7 +9,7 @@ import (
 	"io"
 	"sync"
 
-	errgrp "github.com/luxfi/zmq4/internal/errgroup"
+	errgrp "github.com/luxfi/zmq/v4/internal/errgroup"
 	"golang.org/x/sync/errgroup"
 )
 

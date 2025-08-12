@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/luxfi/zmq4/internal/inproc"
+	"github.com/luxfi/zmq/v4/internal/inproc"
 )
 
 func TestTransport(t *testing.T) {

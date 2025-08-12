@@ -8,7 +8,7 @@ import (
 	"context"
 	"net"
 
-	"github.com/luxfi/zmq4/transport"
+	"github.com/luxfi/zmq/v4/transport"
 )
 
 // Transport implements the zmq4 Transport interface for the inproc transport.

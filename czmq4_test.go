@@ -10,7 +10,7 @@ package zmq4_test
 import (
 	"context"
 
-	"github.com/luxfi/zmq4"
+	"github.com/luxfi/zmq/v4"
 )
 
 var (

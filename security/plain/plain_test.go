@@ -15,8 +15,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luxfi/zmq4"
-	"github.com/luxfi/zmq4/security/plain"
+	"github.com/luxfi/zmq/v4"
+	"github.com/luxfi/zmq/v4/security/plain"
 	"golang.org/x/sync/errgroup"
 )
 

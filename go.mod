@@ -1,4 +1,4 @@
-module github.com/luxfi/zmq4
+module github.com/luxfi/zmq/v4
 
 go 1.24.5
 
