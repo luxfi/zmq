@@ -26,3 +26,4 @@ I (`sbinet`) have not much time to dedicate anymore to this project (as `$WORK` 
 Documentation for `zmq4` is served by [GoDoc](https://godoc.org/github.com/go-zeromq/zmq4).
 
 
+# CI Status
