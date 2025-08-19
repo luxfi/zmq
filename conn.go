@@ -87,6 +87,13 @@ func Open(rw net.Conn, sec Security, sockType SocketType, sockID SocketIdentity,
 	conn.Meta[sysSockID] = conn.id.String()
 	conn.Peer.Meta = make(Metadata)
 
+	// STREAM sockets don't use ZMTP protocol
+	if sockType == Stream {
+		// For STREAM sockets, we don't perform ZMTP handshake
+		// They're raw TCP connections
+		return conn, nil
+	}
+
 	err := conn.init(sec)
 	if err != nil {
 		return nil, fmt.Errorf("zmq4: could not initialize ZMTP connection: %w", err)
@@ -177,6 +184,12 @@ func (c *Conn) SendMsg(msg Msg) error {
 	if c.Closed() {
 		return ErrClosedConn
 	}
+	
+	// STREAM sockets handle raw TCP data differently
+	if c.typ == Stream {
+		return c.sendStream(msg)
+	}
+	
 	if msg.multipart {
 		return c.sendMulti(msg)
 	}
@@ -190,6 +203,21 @@ func (c *Conn) SendMsg(msg Msg) error {
 		err := c.send(false, frame, flag)
 		if err != nil {
 			return fmt.Errorf("zmq4: error sending frame %d/%d: %w", i+1, nframes, err)
+		}
+	}
+	return nil
+}
+
+// sendStream handles sending for STREAM sockets (raw TCP)
+func (c *Conn) sendStream(msg Msg) error {
+	// For STREAM sockets, frames are sent as raw TCP data
+	// First frame should be identity (for routing)
+	// Remaining frames are data
+	for _, frame := range msg.Frames {
+		_, err := c.rw.Write(frame)
+		if err != nil {
+			c.checkIO(err)
+			return err
 		}
 	}
 	return nil
@@ -366,8 +394,46 @@ func (c *Conn) send(isCommand bool, body []byte, flag byte) error {
 	return nil
 }
 
+// readStream handles reading for STREAM sockets (raw TCP)
+func (c *Conn) readStream() Msg {
+	var msg Msg
+	
+	// For STREAM sockets, first frame is always the identity
+	// Read identity (5 bytes for TCP connections)
+	identity := make([]byte, 5)
+	_, err := io.ReadFull(c.rw, identity)
+	if err != nil {
+		msg.err = err
+		c.checkIO(err)
+		return msg
+	}
+	
+	// Add identity as first frame
+	msg.Frames = append(msg.Frames, identity)
+	
+	// Read actual data (up to 8192 bytes at a time)
+	buf := make([]byte, 8192)
+	n, err := c.rw.Read(buf)
+	if err != nil && err != io.EOF {
+		msg.err = err
+		c.checkIO(err)
+		return msg
+	}
+	
+	if n > 0 {
+		msg.Frames = append(msg.Frames, buf[:n])
+	}
+	
+	return msg
+}
+
 // read returns the isCommand flag, the body of the message, and optionally an error
 func (c *Conn) read() Msg {
+	// STREAM sockets handle raw TCP data differently
+	if c.typ == Stream {
+		return c.readStream()
+	}
+
 	var (
 		header  [2]byte
 		longHdr [8]byte
