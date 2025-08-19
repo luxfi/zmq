@@ -57,6 +57,8 @@ type socket struct {
 	closedConns   []*Conn
 	reaperCond    *sync.Cond
 	reaperStarted bool
+	
+	monitor       *socketMonitor // socket event monitoring
 }
 
 func newDefaultSocket(ctx context.Context, sockType SocketType) *socket {

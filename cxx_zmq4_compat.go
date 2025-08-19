@@ -60,6 +60,10 @@ func NewCXSub(ctx context.Context, opts ...czmq4.SockOption) Socket {
 	return newCSocket(czmq4.XSub, opts...)
 }
 
+func NewCStream(ctx context.Context, opts ...czmq4.SockOption) Socket {
+	return newCSocket(czmq4.Stream, opts...)
+}
+
 type csocket struct {
 	sock *czmq4.Sock
 	addr net.Addr
@@ -137,6 +141,8 @@ func (sck *csocket) Type() SocketType {
 		return XPub
 	case czmq4.XSub:
 		return XSub
+	case czmq4.Stream:
+		return Stream
 	}
 	panic("invalid C-socket type")
 }

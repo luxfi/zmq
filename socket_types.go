@@ -19,6 +19,7 @@ const (
 	Push   SocketType = "PUSH"   // a ZMQ_PUSH socket
 	XPub   SocketType = "XPUB"   // a ZMQ_XPUB socket
 	XSub   SocketType = "XSUB"   // a ZMQ_XSUB socket
+	Stream SocketType = "STREAM" // a ZMQ_STREAM socket
 )
 
 // IsCompatible checks whether two sockets are compatible and thus
@@ -78,6 +79,11 @@ func (sck SocketType) IsCompatible(peer SocketType) bool {
 	case XSub:
 		switch peer {
 		case Pub, XPub:
+			return true
+		}
+	case Stream:
+		// STREAM sockets only connect to other STREAM sockets
+		if peer == Stream {
 			return true
 		}
 	default:
