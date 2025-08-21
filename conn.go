@@ -184,12 +184,12 @@ func (c *Conn) SendMsg(msg Msg) error {
 	if c.Closed() {
 		return ErrClosedConn
 	}
-	
+
 	// STREAM sockets handle raw TCP data differently
 	if c.typ == Stream {
 		return c.sendStream(msg)
 	}
-	
+
 	if msg.multipart {
 		return c.sendMulti(msg)
 	}
@@ -397,7 +397,7 @@ func (c *Conn) send(isCommand bool, body []byte, flag byte) error {
 // readStream handles reading for STREAM sockets (raw TCP)
 func (c *Conn) readStream() Msg {
 	var msg Msg
-	
+
 	// For STREAM sockets, first frame is always the identity
 	// Read identity (5 bytes for TCP connections)
 	identity := make([]byte, 5)
@@ -407,10 +407,10 @@ func (c *Conn) readStream() Msg {
 		c.checkIO(err)
 		return msg
 	}
-	
+
 	// Add identity as first frame
 	msg.Frames = append(msg.Frames, identity)
-	
+
 	// Read actual data (up to 8192 bytes at a time)
 	buf := make([]byte, 8192)
 	n, err := c.rw.Read(buf)
@@ -419,11 +419,11 @@ func (c *Conn) readStream() Msg {
 		c.checkIO(err)
 		return msg
 	}
-	
+
 	if n > 0 {
 		msg.Frames = append(msg.Frames, buf[:n])
 	}
-	
+
 	return msg
 }
 

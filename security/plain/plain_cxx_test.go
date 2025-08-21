@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build czmq4
-// +build czmq4
+//go:build cgo
+// +build cgo
 
 package plain_test
 
