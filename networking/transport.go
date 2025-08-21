@@ -18,24 +18,24 @@ import (
 
 // Transport provides high-performance message passing using ZMQ4
 type Transport struct {
-	nodeID   string
-	ctx      context.Context
-	cancel   context.CancelFunc
-	pub      zmq4.Socket
-	sub      zmq4.Socket
-	router   zmq4.Socket
-	dealers  map[string]zmq4.Socket
-	config   Config
-	
+	nodeID  string
+	ctx     context.Context
+	cancel  context.CancelFunc
+	pub     zmq4.Socket
+	sub     zmq4.Socket
+	router  zmq4.Socket
+	dealers map[string]zmq4.Socket
+	config  Config
+
 	mu       sync.RWMutex
 	handlers map[string]MessageHandler
 	peers    []string
-	
+
 	// Metrics
 	msgSent     atomic.Uint64
 	msgReceived atomic.Uint64
 	msgDropped  atomic.Uint64
-	
+
 	stopCh chan struct{}
 	wg     sync.WaitGroup
 }
@@ -92,7 +92,7 @@ func New(ctx context.Context, config Config) *Transport {
 	if config.BufferSize == 0 {
 		config.BufferSize = 1000
 	}
-	
+
 	tCtx, cancel := context.WithCancel(ctx)
 	return &Transport{
 		nodeID:   config.NodeID,
@@ -113,22 +113,22 @@ func (t *Transport) Start() error {
 	if err := t.pub.Listen(pubAddr); err != nil {
 		return fmt.Errorf("failed to bind pub socket on %s: %w", pubAddr, err)
 	}
-	
+
 	// SUB socket for receiving broadcasts
 	t.sub = zmq4.NewSub(t.ctx)
 	t.sub.SetOption(zmq4.OptionSubscribe, "")
-	
+
 	// ROUTER socket for direct messages
 	t.router = zmq4.NewRouter(t.ctx)
 	routerAddr := fmt.Sprintf("tcp://%s:%d", t.config.BindAddress, t.config.BasePort+1000)
 	if err := t.router.Listen(routerAddr); err != nil {
 		return fmt.Errorf("failed to bind router socket on %s: %w", routerAddr, err)
 	}
-	
+
 	t.wg.Add(2)
 	go t.subLoop()
 	go t.routerLoop()
-	
+
 	return nil
 }
 
@@ -137,7 +137,7 @@ func (t *Transport) Stop() {
 	close(t.stopCh)
 	t.cancel()
 	t.wg.Wait()
-	
+
 	// Close sockets
 	if t.pub != nil {
 		t.pub.Close()
@@ -148,7 +148,7 @@ func (t *Transport) Stop() {
 	if t.router != nil {
 		t.router.Close()
 	}
-	
+
 	// Close dealer sockets
 	t.mu.Lock()
 	for _, dealer := range t.dealers {
@@ -166,31 +166,31 @@ func (t *Transport) ConnectPeer(peerID string, port int) error {
 func (t *Transport) ConnectPeerWithAddress(peerID, address string, port int) error {
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	
+
 	// Check if already connected
 	for _, p := range t.peers {
 		if p == peerID {
 			return nil // Already connected
 		}
 	}
-	
+
 	// Subscribe to peer's broadcasts
 	subAddr := fmt.Sprintf("tcp://%s:%d", address, port)
 	if err := t.sub.Dial(subAddr); err != nil {
 		return fmt.Errorf("failed to connect sub to %s at %s: %w", peerID, subAddr, err)
 	}
-	
+
 	// Create dealer for direct messages
 	dealer := zmq4.NewDealer(t.ctx, zmq4.WithID(zmq4.SocketIdentity(t.nodeID)))
-	
+
 	routerAddr := fmt.Sprintf("tcp://%s:%d", address, port+1000)
 	if err := dealer.Dial(routerAddr); err != nil {
 		return fmt.Errorf("failed to connect dealer to %s at %s: %w", peerID, routerAddr, err)
 	}
-	
+
 	t.dealers[peerID] = dealer
 	t.peers = append(t.peers, peerID)
-	
+
 	return nil
 }
 
@@ -198,13 +198,13 @@ func (t *Transport) ConnectPeerWithAddress(peerID, address string, port int) err
 func (t *Transport) DisconnectPeer(peerID string) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	
+
 	// Close and remove dealer
 	if dealer, ok := t.dealers[peerID]; ok {
 		dealer.Close()
 		delete(t.dealers, peerID)
 	}
-	
+
 	// Remove from peers list
 	newPeers := make([]string, 0, len(t.peers)-1)
 	for _, p := range t.peers {
@@ -219,12 +219,12 @@ func (t *Transport) DisconnectPeer(peerID string) {
 func (t *Transport) Broadcast(msg *Message) error {
 	msg.From = t.nodeID
 	msg.Timestamp = time.Now().UnixNano()
-	
+
 	data, err := json.Marshal(msg)
 	if err != nil {
 		return fmt.Errorf("failed to marshal message: %w", err)
 	}
-	
+
 	t.msgSent.Add(1)
 	return t.pub.Send(zmq4.NewMsg(data))
 }
@@ -234,20 +234,20 @@ func (t *Transport) Send(peerID string, msg *Message) error {
 	t.mu.RLock()
 	dealer, ok := t.dealers[peerID]
 	t.mu.RUnlock()
-	
+
 	if !ok {
 		return fmt.Errorf("no connection to peer %s", peerID)
 	}
-	
+
 	msg.From = t.nodeID
 	msg.To = peerID
 	msg.Timestamp = time.Now().UnixNano()
-	
+
 	data, err := json.Marshal(msg)
 	if err != nil {
 		return fmt.Errorf("failed to marshal message: %w", err)
 	}
-	
+
 	t.msgSent.Add(1)
 	return dealer.Send(zmq4.NewMsg(data))
 }
@@ -255,7 +255,7 @@ func (t *Transport) Send(peerID string, msg *Message) error {
 // SendWithRetry sends a message with retry logic
 func (t *Transport) SendWithRetry(peerID string, msg *Message) error {
 	var lastErr error
-	
+
 	for i := 0; i < t.config.MaxRetries; i++ {
 		if err := t.Send(peerID, msg); err == nil {
 			return nil
@@ -266,14 +266,14 @@ func (t *Transport) SendWithRetry(peerID string, msg *Message) error {
 			}
 		}
 	}
-	
+
 	return fmt.Errorf("failed after %d retries: %w", t.config.MaxRetries, lastErr)
 }
 
 // BroadcastWithRetry broadcasts a message with retry logic
 func (t *Transport) BroadcastWithRetry(msg *Message) error {
 	var lastErr error
-	
+
 	for i := 0; i < t.config.MaxRetries; i++ {
 		if err := t.Broadcast(msg); err == nil {
 			return nil
@@ -284,7 +284,7 @@ func (t *Transport) BroadcastWithRetry(msg *Message) error {
 			}
 		}
 	}
-	
+
 	return fmt.Errorf("failed after %d retries: %w", t.config.MaxRetries, lastErr)
 }
 
@@ -324,7 +324,7 @@ func (t *Transport) GetMetrics() (sent, received, dropped uint64) {
 // subLoop processes broadcast messages
 func (t *Transport) subLoop() {
 	defer t.wg.Done()
-	
+
 	for {
 		select {
 		case <-t.stopCh:
@@ -340,7 +340,7 @@ func (t *Transport) subLoop() {
 				// Transient error, continue
 				continue
 			}
-			
+
 			t.processMessage(msg.Bytes())
 		}
 	}
@@ -349,7 +349,7 @@ func (t *Transport) subLoop() {
 // routerLoop processes direct messages
 func (t *Transport) routerLoop() {
 	defer t.wg.Done()
-	
+
 	for {
 		select {
 		case <-t.stopCh:
@@ -365,7 +365,7 @@ func (t *Transport) routerLoop() {
 				// Transient error, continue
 				continue
 			}
-			
+
 			// Router socket includes identity frame
 			if msg.Frames != nil && len(msg.Frames) > 0 {
 				// Last frame contains the actual message
@@ -383,19 +383,19 @@ func (t *Transport) processMessage(data []byte) {
 		t.msgDropped.Add(1)
 		return
 	}
-	
+
 	// Skip our own broadcasts
 	if message.From == t.nodeID && message.To == "" {
 		return
 	}
-	
+
 	t.msgReceived.Add(1)
-	
+
 	// Route to appropriate handler
 	t.mu.RLock()
 	handler, ok := t.handlers[message.Type]
 	t.mu.RUnlock()
-	
+
 	if ok && handler != nil {
 		// Call handler in goroutine to avoid blocking
 		go handler(&message)

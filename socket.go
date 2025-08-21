@@ -29,6 +29,9 @@ var (
 	ErrBadProperty = errors.New("zmq4: bad property")
 )
 
+// socketMonitor is a no-op monitor for compatibility
+type socketMonitor struct{}
+
 // socket implements the ZeroMQ socket interface
 type socket struct {
 	ep            string // socket end-point
@@ -57,8 +60,8 @@ type socket struct {
 	closedConns   []*Conn
 	reaperCond    *sync.Cond
 	reaperStarted bool
-	
-	monitor       *socketMonitor // socket event monitoring
+
+	monitor *socketMonitor // socket monitor for events
 }
 
 func newDefaultSocket(ctx context.Context, sockType SocketType) *socket {
@@ -67,19 +70,20 @@ func newDefaultSocket(ctx context.Context, sockType SocketType) *socket {
 	}
 	ctx, cancel := context.WithCancel(ctx)
 	return &socket{
-		typ:        sockType,
-		retry:      defaultRetry,
-		maxRetries: defaultMaxRetries,
-		timeout:    defaultTimeout,
-		sec:        nullSecurity{},
-		conns:      nil,
-		r:          newQReader(ctx),
-		w:          newMWriter(ctx),
-		props:      make(map[string]interface{}),
-		ctx:        ctx,
-		cancel:     cancel,
-		dialer:     net.Dialer{Timeout: defaultTimeout},
-		reaperCond: sync.NewCond(&sync.Mutex{}),
+		typ:           sockType,
+		retry:         defaultRetry,
+		maxRetries:    defaultMaxRetries,
+		timeout:       defaultTimeout,
+		autoReconnect: true,
+		sec:           nullSecurity{},
+		conns:         nil,
+		r:             newQReader(ctx),
+		w:             newMWriter(ctx),
+		props:         make(map[string]interface{}),
+		ctx:           ctx,
+		cancel:        cancel,
+		dialer:        net.Dialer{Timeout: defaultTimeout},
+		reaperCond:    sync.NewCond(&sync.Mutex{}),
 	}
 }
 
