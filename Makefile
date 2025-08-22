@@ -5,25 +5,25 @@
 # Default target
 all: build
 
-# Build the project
+# Build the project (pure Go by default)
 build:
-	GO111MODULE=on go build -mod=readonly .
+	CGO_ENABLED=0 GO111MODULE=on go build -mod=readonly .
 
-# Run tests
+# Run tests (pure Go - explicitly disable CGO)
 test:
-	GO111MODULE=on go test -mod=readonly ./...
+	CGO_ENABLED=0 GO111MODULE=on go test -mod=readonly ./...
 
-# Run tests with verbose output
+# Run tests with verbose output (pure Go)
 test-verbose:
-	GO111MODULE=on go test -v -mod=readonly ./...
+	CGO_ENABLED=0 GO111MODULE=on go test -v -mod=readonly ./...
 
-# Run tests with race detector
+# Run tests with race detector (pure Go)
 test-race:
-	GO111MODULE=on go test -race -mod=readonly ./...
+	CGO_ENABLED=0 GO111MODULE=on go test -race -mod=readonly ./...
 
-# Run tests with coverage
+# Run tests with coverage (pure Go)
 test-cover:
-	GO111MODULE=on go test -coverprofile=coverage.out -mod=readonly ./...
+	CGO_ENABLED=0 GO111MODULE=on go test -coverprofile=coverage.out -mod=readonly ./...
 	go tool cover -html=coverage.out -o coverage.html
 
 # Run tests with czmq compatibility layer (requires czmq/v4)
@@ -38,9 +38,9 @@ test-czmq-verbose:
 test-czmq-race:
 	CGO_ENABLED=1 GO111MODULE=on go test -race -mod=readonly ./...
 
-# Run benchmarks
+# Run benchmarks (pure Go)
 bench:
-	GO111MODULE=on go test -bench=. -benchmem -mod=readonly ./...
+	CGO_ENABLED=0 GO111MODULE=on go test -bench=. -benchmem -mod=readonly ./...
 
 # Run linter (requires golangci-lint)
 lint:

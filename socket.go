@@ -60,6 +60,7 @@ type socket struct {
 	closedConns   []*Conn
 	reaperCond    *sync.Cond
 	reaperStarted bool
+	isClosed      bool // tracks if socket has been closed
 
 	monitor *socketMonitor // socket monitor for events
 }
@@ -126,6 +127,14 @@ func (sck *socket) topics() []string {
 
 // Close closes the open Socket
 func (sck *socket) Close() error {
+	sck.mu.Lock()
+	if sck.isClosed {
+		sck.mu.Unlock()
+		return fmt.Errorf("zmq4: socket already closed")
+	}
+	sck.isClosed = true
+	sck.mu.Unlock()
+
 	// The Lock around Signal ensures the connReaper is running
 	// and is in sck.reaperCond.Wait()
 	sck.reaperCond.L.Lock()
@@ -138,8 +147,6 @@ func (sck *socket) Close() error {
 	}
 
 	sck.mu.RLock()
-	defer sck.mu.RUnlock()
-
 	var err error
 	for _, conn := range sck.conns {
 		e := conn.Close()
@@ -149,8 +156,11 @@ func (sck *socket) Close() error {
 	}
 
 	// Remove the unix socket file if created by net.Listen
-	if sck.listener != nil && strings.HasPrefix(sck.ep, "ipc://") {
-		os.Remove(sck.ep[len("ipc://"):])
+	ep := sck.ep
+	sck.mu.RUnlock()
+	
+	if sck.listener != nil && strings.HasPrefix(ep, "ipc://") {
+		os.Remove(ep[len("ipc://"):])
 	}
 
 	return err
@@ -159,6 +169,13 @@ func (sck *socket) Close() error {
 // Send puts the message on the outbound send queue.
 // Send blocks until the message can be queued or the send deadline expires.
 func (sck *socket) Send(msg Msg) error {
+	sck.mu.RLock()
+	if sck.isClosed {
+		sck.mu.RUnlock()
+		return fmt.Errorf("zmq4: socket is closed")
+	}
+	sck.mu.RUnlock()
+	
 	ctx, cancel := context.WithTimeout(sck.ctx, sck.Timeout())
 	defer cancel()
 	return sck.w.write(ctx, msg)
@@ -168,6 +185,13 @@ func (sck *socket) Send(msg Msg) error {
 // SendMulti blocks until the message can be queued or the send deadline expires.
 // The message will be sent as a multipart message.
 func (sck *socket) SendMulti(msg Msg) error {
+	sck.mu.RLock()
+	if sck.isClosed {
+		sck.mu.RUnlock()
+		return fmt.Errorf("zmq4: socket is closed")
+	}
+	sck.mu.RUnlock()
+	
 	msg.multipart = true
 	ctx, cancel := context.WithTimeout(sck.ctx, sck.Timeout())
 	defer cancel()
@@ -176,6 +200,13 @@ func (sck *socket) SendMulti(msg Msg) error {
 
 // Recv receives a complete message.
 func (sck *socket) Recv() (Msg, error) {
+	sck.mu.RLock()
+	if sck.isClosed {
+		sck.mu.RUnlock()
+		return Msg{}, fmt.Errorf("zmq4: socket is closed")
+	}
+	sck.mu.RUnlock()
+	
 	ctx, cancel := context.WithCancel(sck.ctx)
 	defer cancel()
 	var msg Msg
@@ -185,7 +216,17 @@ func (sck *socket) Recv() (Msg, error) {
 
 // Listen connects a local endpoint to the Socket.
 func (sck *socket) Listen(endpoint string) error {
+	sck.mu.Lock()
+	if sck.isClosed {
+		sck.mu.Unlock()
+		return fmt.Errorf("zmq4: socket is closed")
+	}
+	if sck.listener != nil {
+		sck.mu.Unlock()
+		return fmt.Errorf("zmq4: socket already listening on %q", sck.ep)
+	}
 	sck.ep = endpoint
+	sck.mu.Unlock()
 	network, addr, err := splitAddr(endpoint)
 	if err != nil {
 		return err
@@ -200,7 +241,10 @@ func (sck *socket) Listen(endpoint string) error {
 	if err != nil {
 		return fmt.Errorf("zmq4: could not listen to %q: %w", endpoint, err)
 	}
+	
+	sck.mu.Lock()
 	sck.listener = l
+	sck.mu.Unlock()
 
 	go sck.accept()
 	if !sck.reaperStarted {
@@ -241,7 +285,13 @@ func (sck *socket) accept() {
 
 // Dial connects a remote endpoint to the Socket.
 func (sck *socket) Dial(endpoint string) error {
+	sck.mu.Lock()
+	if sck.isClosed {
+		sck.mu.Unlock()
+		return fmt.Errorf("zmq4: socket is closed")
+	}
 	sck.ep = endpoint
+	sck.mu.Unlock()
 
 	network, addr, err := splitAddr(endpoint)
 	if err != nil {
@@ -292,7 +342,6 @@ connect:
 
 func (sck *socket) addConn(c *Conn) {
 	sck.mu.Lock()
-	defer sck.mu.Unlock()
 	sck.conns = append(sck.conns, c)
 	if len(c.Peer.Meta[sysSockID]) == 0 {
 		switch c.typ {
@@ -308,11 +357,16 @@ func (sck *socket) addConn(c *Conn) {
 	if sck.r != nil {
 		sck.r.addConn(c)
 	}
-	// resend subscriptions for topics if there are any
+	// Get topics to resend while holding the lock
+	var topics []string
 	if sck.subTopics != nil {
-		for _, topic := range sck.subTopics() {
-			_ = sck.Send(NewMsg(append([]byte{1}, topic...)))
-		}
+		topics = sck.subTopics()
+	}
+	sck.mu.Unlock()
+	
+	// resend subscriptions for topics if there are any (without holding the lock)
+	for _, topic := range topics {
+		_ = sck.Send(NewMsg(append([]byte{1}, topic...)))
 	}
 }
 
