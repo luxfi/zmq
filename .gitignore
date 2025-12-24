@@ -1,7 +1,4 @@
 LLM.md
-AGENTS.md
-CLAUDE.md
-GEMINI.md
 
 # Test artifacts
 *.test
@@ -23,3 +20,11 @@ coverage-*.out
 # OS specific files
 .DS_Store
 Thumbs.db
+
+
+
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+GROK.md
+QWEN.md
