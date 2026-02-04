@@ -158,7 +158,7 @@ func (sck *socket) Close() error {
 	// Remove the unix socket file if created by net.Listen
 	ep := sck.ep
 	sck.mu.RUnlock()
-	
+
 	if sck.listener != nil && strings.HasPrefix(ep, "ipc://") {
 		os.Remove(ep[len("ipc://"):])
 	}
@@ -175,7 +175,7 @@ func (sck *socket) Send(msg Msg) error {
 		return fmt.Errorf("zmq4: socket is closed")
 	}
 	sck.mu.RUnlock()
-	
+
 	ctx, cancel := context.WithTimeout(sck.ctx, sck.Timeout())
 	defer cancel()
 	return sck.w.write(ctx, msg)
@@ -191,7 +191,7 @@ func (sck *socket) SendMulti(msg Msg) error {
 		return fmt.Errorf("zmq4: socket is closed")
 	}
 	sck.mu.RUnlock()
-	
+
 	msg.multipart = true
 	ctx, cancel := context.WithTimeout(sck.ctx, sck.Timeout())
 	defer cancel()
@@ -206,7 +206,7 @@ func (sck *socket) Recv() (Msg, error) {
 		return Msg{}, fmt.Errorf("zmq4: socket is closed")
 	}
 	sck.mu.RUnlock()
-	
+
 	ctx, cancel := context.WithCancel(sck.ctx)
 	defer cancel()
 	var msg Msg
@@ -241,7 +241,7 @@ func (sck *socket) Listen(endpoint string) error {
 	if err != nil {
 		return fmt.Errorf("zmq4: could not listen to %q: %w", endpoint, err)
 	}
-	
+
 	sck.mu.Lock()
 	sck.listener = l
 	sck.mu.Unlock()
@@ -363,7 +363,7 @@ func (sck *socket) addConn(c *Conn) {
 		topics = sck.subTopics()
 	}
 	sck.mu.Unlock()
-	
+
 	// resend subscriptions for topics if there are any (without holding the lock)
 	for _, topic := range topics {
 		_ = sck.Send(NewMsg(append([]byte{1}, topic...)))
