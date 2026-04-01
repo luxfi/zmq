@@ -5,8 +5,8 @@ go 1.26.1
 require (
 	github.com/luxfi/czmq/v4 v4.2.2
 	go.uber.org/goleak v1.3.0
-	golang.org/x/sync v0.19.0
-	golang.org/x/text v0.33.0
+	golang.org/x/sync v0.20.0
+	golang.org/x/text v0.35.0
 )
 
 require (
