@@ -1,6 +1,6 @@
 module github.com/luxfi/zmq/v4
 
-go 1.26.1
+go 1.26.3
 
 require (
 	github.com/luxfi/czmq/v4 v4.2.2
