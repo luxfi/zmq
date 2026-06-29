@@ -1,3 +1,5 @@
+<p align="center"><img src=".github/hero.svg" alt="zmq" width="880"></p>
+
 # zmq4 - LuxFi Fork
 
 [![GitHub release](https://img.shields.io/github/release/luxfi/zmq.svg)](https://github.com/luxfi/zmq/releases)
