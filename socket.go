@@ -50,7 +50,7 @@ type socket struct {
 	r     rpool
 	w     wpool
 
-	props map[string]interface{} // properties of this socket
+	props map[string]any // properties of this socket
 
 	ctx      context.Context // life-line of socket
 	cancel   context.CancelFunc
@@ -80,7 +80,7 @@ func newDefaultSocket(ctx context.Context, sockType SocketType) *socket {
 		conns:         nil,
 		r:             newQReader(ctx),
 		w:             newMWriter(ctx),
-		props:         make(map[string]interface{}),
+		props:         make(map[string]any),
 		ctx:           ctx,
 		cancel:        cancel,
 		dialer:        net.Dialer{Timeout: defaultTimeout},
@@ -421,7 +421,7 @@ func (sck *socket) Addr() net.Addr {
 }
 
 // GetOption is used to retrieve an option for a socket.
-func (sck *socket) GetOption(name string) (interface{}, error) {
+func (sck *socket) GetOption(name string) (any, error) {
 	v, ok := sck.props[name]
 	if !ok {
 		return nil, ErrBadProperty
@@ -430,7 +430,7 @@ func (sck *socket) GetOption(name string) (interface{}, error) {
 }
 
 // SetOption is used to set an option for a socket.
-func (sck *socket) SetOption(name string, value interface{}) error {
+func (sck *socket) SetOption(name string, value any) error {
 	// FIXME(sbinet) different socket types support different options.
 	sck.props[name] = value
 	return nil

@@ -36,8 +36,7 @@ func TestRegularErrGroupDoesNotRespectParentContext(t *testing.T) {
 // TestErrGroupWithContextCanCallFunctions checks the errgroup operations
 // are fine working and errgroup called function can return error
 func TestErrGroupWithContextCanCallFunctions(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 	eg, _ := WithContext(ctx)
 
 	what := fmt.Errorf("func generated error")

@@ -68,12 +68,12 @@ func (stream *streamSocket) Addr() net.Addr {
 }
 
 // GetOption is used to retrieve an option for a socket.
-func (stream *streamSocket) GetOption(name string) (interface{}, error) {
+func (stream *streamSocket) GetOption(name string) (any, error) {
 	return stream.sck.GetOption(name)
 }
 
 // SetOption is used to set an option for a socket.
-func (stream *streamSocket) SetOption(name string, value interface{}) error {
+func (stream *streamSocket) SetOption(name string, value any) error {
 	return stream.sck.SetOption(name, value)
 }
 

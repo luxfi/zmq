@@ -180,7 +180,7 @@ func TestAllSocketTypes(t *testing.T) {
 				}
 
 				// Receive each part
-				for i := 0; i < 3; i++ {
+				for i := range 3 {
 					msg, err := sock2.Recv()
 					if err != nil {
 						t.Errorf("Recv part %d failed: %v", i, err)
@@ -673,7 +673,7 @@ func TestPushPullLoadBalancing(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	// Send messages
-	for i := 0; i < 6; i++ {
+	for i := range 6 {
 		msg := zmq4.NewMsg([]byte(fmt.Sprintf("work-%d", i)))
 		err = push.Send(msg)
 		if err != nil {

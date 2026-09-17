@@ -68,12 +68,12 @@ func (xpub *xpubSocket) Addr() net.Addr {
 }
 
 // GetOption is used to retrieve an option for a socket.
-func (xpub *xpubSocket) GetOption(name string) (interface{}, error) {
+func (xpub *xpubSocket) GetOption(name string) (any, error) {
 	return xpub.sck.GetOption(name)
 }
 
 // SetOption is used to set an option for a socket.
-func (xpub *xpubSocket) SetOption(name string, value interface{}) error {
+func (xpub *xpubSocket) SetOption(name string, value any) error {
 	return xpub.sck.SetOption(name, value)
 }
 

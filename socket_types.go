@@ -100,9 +100,6 @@ func (sck SocketType) IsCompatible(peer SocketType) bool {
 type SocketIdentity []byte
 
 func (id SocketIdentity) String() string {
-	n := len(id)
-	if n > 255 { // ZMTP identities are: 0*255OCTET
-		n = 255
-	}
+	n := min(len(id), 255) // ZMTP identities are: 0*255OCTET
 	return string(id[:n])
 }

@@ -80,12 +80,12 @@ func (rep *repSocket) Addr() net.Addr {
 }
 
 // GetOption is used to retrieve an option for a socket.
-func (rep *repSocket) GetOption(name string) (interface{}, error) {
+func (rep *repSocket) GetOption(name string) (any, error) {
 	return rep.sck.GetOption(name)
 }
 
 // SetOption is used to set an option for a socket.
-func (rep *repSocket) SetOption(name string, value interface{}) error {
+func (rep *repSocket) SetOption(name string, value any) error {
 	return rep.sck.SetOption(name, value)
 }
 

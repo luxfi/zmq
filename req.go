@@ -81,12 +81,12 @@ func (req *reqSocket) Addr() net.Addr {
 }
 
 // GetOption is used to retrieve an option for a socket.
-func (req *reqSocket) GetOption(name string) (interface{}, error) {
+func (req *reqSocket) GetOption(name string) (any, error) {
 	return req.sck.GetOption(name)
 }
 
 // SetOption is used to set an option for a socket.
-func (req *reqSocket) SetOption(name string, value interface{}) error {
+func (req *reqSocket) SetOption(name string, value any) error {
 	return req.sck.SetOption(name, value)
 }
 

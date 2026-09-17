@@ -32,14 +32,14 @@ func (q *Queue) Init() {
 func (q *Queue) Push(val Msg) {
 	q.len++
 
-	var i []interface{}
+	var i []any
 	elem := q.rep.Back()
 	if elem != nil {
-		i = elem.Value.([]interface{})
+		i = elem.Value.([]any)
 	}
 	if i == nil || len(i) == innerCap {
-		elem = q.rep.PushBack(make([]interface{}, 0, innerCap))
-		i = elem.Value.([]interface{})
+		elem = q.rep.PushBack(make([]any, 0, innerCap))
+		i = elem.Value.([]any)
 	}
 
 	elem.Value = append(i, val)
@@ -60,7 +60,7 @@ func (q *Queue) Pop() {
 	}
 
 	q.len--
-	i := elem.Value.([]interface{})
+	i := elem.Value.([]any)
 	i[0] = nil // remove ref to poped element
 	i = i[1:]
 	if len(i) == 0 {
@@ -70,10 +70,10 @@ func (q *Queue) Pop() {
 	}
 }
 
-func (q *Queue) front() []interface{} {
+func (q *Queue) front() []any {
 	elem := q.rep.Front()
 	if elem == nil {
 		return nil
 	}
-	return elem.Value.([]interface{})
+	return elem.Value.([]any)
 }

@@ -458,7 +458,7 @@ func TestConcurrentOperations(t *testing.T) {
 
 	// Create multiple clients concurrently
 	var clients []zmq4.Socket
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		go func(id int) {
 			client := zmq4.NewDealer(ctx, zmq4.WithID(zmq4.SocketIdentity(fmt.Sprintf("client-%d", id))))
 			if client != nil {

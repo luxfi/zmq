@@ -66,12 +66,12 @@ func (pair *pairSocket) Addr() net.Addr {
 }
 
 // GetOption is used to retrieve an option for a socket.
-func (pair *pairSocket) GetOption(name string) (interface{}, error) {
+func (pair *pairSocket) GetOption(name string) (any, error) {
 	return pair.sck.GetOption(name)
 }
 
 // SetOption is used to set an option for a socket.
-func (pair *pairSocket) SetOption(name string, value interface{}) error {
+func (pair *pairSocket) SetOption(name string, value any) error {
 	return pair.sck.SetOption(name, value)
 }
 

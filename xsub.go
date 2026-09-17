@@ -66,12 +66,12 @@ func (xsub *xsubSocket) Addr() net.Addr {
 }
 
 // GetOption is used to retrieve an option for a socket.
-func (xsub *xsubSocket) GetOption(name string) (interface{}, error) {
+func (xsub *xsubSocket) GetOption(name string) (any, error) {
 	return xsub.sck.GetOption(name)
 }
 
 // SetOption is used to set an option for a socket.
-func (xsub *xsubSocket) SetOption(name string, value interface{}) error {
+func (xsub *xsubSocket) SetOption(name string, value any) error {
 	return xsub.sck.SetOption(name, value)
 }
 

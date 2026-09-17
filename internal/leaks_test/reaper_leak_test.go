@@ -37,7 +37,7 @@ func TestReaperLeak1(t *testing.T) {
 	wgServer := &sync.WaitGroup{}
 	client := func() {
 		defer wgClients.Done()
-		for n := 0; n < maxMsgs; n++ {
+		for range maxMsgs {
 			func() {
 				ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 				defer cancel()
@@ -88,7 +88,7 @@ func TestReaperLeak1(t *testing.T) {
 	wgServer.Add(1)
 	go server()
 	wgClients.Add(maxClients)
-	for n := 0; n < maxClients; n++ {
+	for range maxClients {
 		go client()
 	}
 	wgClients.Wait()

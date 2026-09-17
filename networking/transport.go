@@ -9,6 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -168,10 +169,8 @@ func (t *Transport) ConnectPeerWithAddress(peerID, address string, port int) err
 	defer t.mu.Unlock()
 
 	// Check if already connected
-	for _, p := range t.peers {
-		if p == peerID {
-			return nil // Already connected
-		}
+	if slices.Contains(t.peers, peerID) {
+		return nil // Already connected
 	}
 
 	// Subscribe to peer's broadcasts

@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 
 //go:build cgo
-// +build cgo
 
 package zmq4
 
@@ -159,12 +158,12 @@ func (sck *csocket) Conn() net.Conn {
 }
 
 // GetOption is used to retrieve an option for a socket.
-func (sck *csocket) GetOption(name string) (interface{}, error) {
+func (sck *csocket) GetOption(name string) (any, error) {
 	panic("not implemented")
 }
 
 // SetOption is used to set an option for a socket.
-func (sck *csocket) SetOption(name string, value interface{}) error {
+func (sck *csocket) SetOption(name string, value any) error {
 	switch name {
 	case OptionSubscribe:
 		topic := value.(string)

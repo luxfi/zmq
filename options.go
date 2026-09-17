@@ -36,7 +36,7 @@ func WithTimeout(timeout time.Duration) Option {
 }
 
 // WithLogger is a no-op for compatibility
-func WithLogger(logger interface{}) Option {
+func WithLogger(logger any) Option {
 	return func(s *socket) {}
 }
 

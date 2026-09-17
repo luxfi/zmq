@@ -235,7 +235,7 @@ func TestPubSubClosedSub(t *testing.T) {
 		<-subReady
 		time.Sleep(time.Second * 1)
 
-		for i := 0; i < nmsgs; i++ {
+		for range nmsgs {
 			if err := pub.Send(msg); err != nil {
 				return fmt.Errorf("could not send message %v: %w", msg, err)
 			}
@@ -245,7 +245,7 @@ func TestPubSubClosedSub(t *testing.T) {
 		<-subClosed
 		time.Sleep(time.Second * 1)
 
-		for i := 0; i < nmsgs; i++ {
+		for range nmsgs {
 			if err := pub.Send(msg); err != nil {
 				return fmt.Errorf("could not send message %v: %w", msg, err)
 			}
@@ -466,7 +466,7 @@ func TestPubSubDeadPub(t *testing.T) {
 		<-subReady
 		time.Sleep(time.Second * 1)
 
-		for i := 0; i < nmsgs; i++ {
+		for range nmsgs {
 			if err := pub.Send(msg); err != nil {
 				return fmt.Errorf("could not send message %v: %w", msg, err)
 			}
@@ -490,7 +490,7 @@ func TestPubSubDeadPub(t *testing.T) {
 
 		close(subReady)
 
-		for i := 0; i < nmsgs; i++ {
+		for range nmsgs {
 			rmsg, err := sub.Recv()
 			if err != nil {
 				return fmt.Errorf("could not recv message: %w", err)
@@ -644,7 +644,7 @@ func BenchmarkPubSub(b *testing.B) {
 		pss.WaitForSubscriptions()
 		time.Sleep(1 * time.Second)
 
-		for i := 0; i < msgCount; i++ {
+		for range msgCount {
 			err = pub.SendMulti(msg)
 			if err != nil {
 				return fmt.Errorf("error sending message: %v\n", err)
@@ -673,7 +673,7 @@ func BenchmarkPubSub(b *testing.B) {
 		pss.WaitForSubscriptions()
 
 		var siz int
-		for i := 0; i < msgCount; i++ {
+		for range msgCount {
 			msg, err := sub.Recv()
 			if err != nil {
 				return fmt.Errorf("could not recv message: %v", err)

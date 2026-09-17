@@ -78,12 +78,12 @@ func (sub *subSocket) Addr() net.Addr {
 }
 
 // GetOption is used to retrieve an option for a socket.
-func (sub *subSocket) GetOption(name string) (interface{}, error) {
+func (sub *subSocket) GetOption(name string) (any, error) {
 	return sub.sck.GetOption(name)
 }
 
 // SetOption is used to set an option for a socket.
-func (sub *subSocket) SetOption(name string, value interface{}) error {
+func (sub *subSocket) SetOption(name string, value any) error {
 	err := sub.sck.SetOption(name, value)
 	if err != nil {
 		return err

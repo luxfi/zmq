@@ -1,5 +1,4 @@
 //go:build !cgo || !czmq
-// +build !cgo !czmq
 
 // Copyright 2025 The go-zeromq Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style

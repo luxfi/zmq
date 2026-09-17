@@ -68,12 +68,12 @@ func (pull *pullSocket) Addr() net.Addr {
 }
 
 // GetOption is used to retrieve an option for a socket.
-func (pull *pullSocket) GetOption(name string) (interface{}, error) {
+func (pull *pullSocket) GetOption(name string) (any, error) {
 	return pull.sck.GetOption(name)
 }
 
 // SetOption is used to set an option for a socket.
-func (pull *pullSocket) SetOption(name string, value interface{}) error {
+func (pull *pullSocket) SetOption(name string, value any) error {
 	return pull.sck.SetOption(name, value)
 }
 

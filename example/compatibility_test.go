@@ -1,5 +1,4 @@
 //go:build cgo
-// +build cgo
 
 // This example demonstrates using the CZMQ compatibility layer.
 // Build and run with: CGO_ENABLED=1 go run compatibility_test.go

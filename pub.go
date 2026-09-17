@@ -87,12 +87,12 @@ func (pub *pubSocket) Addr() net.Addr {
 }
 
 // GetOption is used to retrieve an option for a socket.
-func (pub *pubSocket) GetOption(name string) (interface{}, error) {
+func (pub *pubSocket) GetOption(name string) (any, error) {
 	return pub.sck.GetOption(name)
 }
 
 // SetOption is used to set an option for a socket.
-func (pub *pubSocket) SetOption(name string, value interface{}) error {
+func (pub *pubSocket) SetOption(name string, value any) error {
 	err := pub.sck.SetOption(name, value)
 	if err != nil {
 		return err

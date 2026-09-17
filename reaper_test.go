@@ -5,7 +5,6 @@
 package zmq4
 
 import (
-	"context"
 	"io"
 	"net"
 	"sync/atomic"
@@ -18,8 +17,7 @@ func TestConnReaperDeadlock2(t *testing.T) {
 	ep := must(EndPoint("tcp"))
 	defer cleanUp(ep)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	// Bind the server.
 	srv := NewRouter(ctx, WithLogger(Devnull)).(*routerSocket)
@@ -37,7 +35,7 @@ func TestConnReaperDeadlock2(t *testing.T) {
 	id := "client-x"
 	srv.sck.mu.Lock()
 	rmw := srv.sck.w.(*routerMWriter)
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		w := &Conn{}
 		w.Peer.Meta = make(Metadata)
 		w.Peer.Meta[sysSockID] = id

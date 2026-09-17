@@ -64,7 +64,7 @@ func TestProxy(t *testing.T) {
 
 	// Worker echo loop
 	go func() {
-		for i := 0; i < 3; i++ {
+		for range 3 {
 			msg, err := worker.Recv()
 			if err != nil {
 				t.Error("worker.Recv:", err)
@@ -82,7 +82,7 @@ func TestProxy(t *testing.T) {
 	}()
 
 	// Send requests through proxy
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		msg := zmq4.NewMsg([]byte(fmt.Sprintf("Request %d", i)))
 		err = client.Send(msg)
 		if err != nil {
@@ -226,7 +226,7 @@ func TestDevice(t *testing.T) {
 	// Test removed - Device no longer exists
 
 	// Send and receive through device
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		msg := zmq4.NewMsg([]byte(fmt.Sprintf("Message %d", i)))
 		err = producer.Send(msg)
 		if err != nil {

@@ -75,12 +75,12 @@ func (router *routerSocket) Addr() net.Addr {
 }
 
 // GetOption is used to retrieve an option for a socket.
-func (router *routerSocket) GetOption(name string) (interface{}, error) {
+func (router *routerSocket) GetOption(name string) (any, error) {
 	return router.sck.GetOption(name)
 }
 
 // SetOption is used to set an option for a socket.
-func (router *routerSocket) SetOption(name string, value interface{}) error {
+func (router *routerSocket) SetOption(name string, value any) error {
 	return router.sck.SetOption(name, value)
 }
 

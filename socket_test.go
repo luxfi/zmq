@@ -182,8 +182,7 @@ func TestConnReaperDeadlock(t *testing.T) {
 	ep := must(EndPoint("tcp"))
 	defer cleanUp(ep)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	// Bind the server.
 	srv := zmq4.NewRouter(ctx, zmq4.WithLogger(zmq4.Devnull))
@@ -194,7 +193,7 @@ func TestConnReaperDeadlock(t *testing.T) {
 
 	// Connect 10 clients.
 	var clients []zmq4.Socket
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		id := fmt.Sprint("client-", i)
 		c := zmq4.NewReq(ctx, zmq4.WithLogger(zmq4.Devnull), zmq4.WithID(zmq4.SocketIdentity(id)))
 		if err := c.Dial(ep); err != nil {
@@ -205,7 +204,7 @@ func TestConnReaperDeadlock(t *testing.T) {
 
 	// Disconnect 5 of them _from the client side_. The server does not know
 	// the client is gone until it tries to send a message below.
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		clients[i].Close()
 	}
 
@@ -243,9 +242,7 @@ func TestSocketSendSubscriptionOnConnect(t *testing.T) {
 	defer wg.Wait()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		for {
 			pub.Send(zmq4.NewMsgFromString([]string{message}))
 			if ctx.Err() != nil {
@@ -253,7 +250,7 @@ func TestSocketSendSubscriptionOnConnect(t *testing.T) {
 			}
 			time.Sleep(1 * time.Millisecond)
 		}
-	}()
+	})
 	msg, err := sub.Recv()
 	if err != nil {
 		t.Fatalf("Recv failed: %v", err)
